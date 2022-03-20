@@ -1,0 +1,142 @@
+interface IProfile {
+  id: ID!
+  name: String!
+  screenName: String! #twitter handle name
+  imageUrl: AWSURL
+  backgroundImageUrl: AWSURL
+  bio: String
+  location: String
+  website: AWSURL
+  birthdate: AWSURL
+  createdAt: AWSDateTime!
+  tweets: [TweetsPage!]
+  followersCount: Int!
+  followingCount: Int!
+  tweetsCount: Int!
+  likesCount: Int!
+}
+
+type MyProfile implements IProfile {
+  id: ID!
+  name: String!
+  screenName: String!
+  imageUrl: AWSURL
+  backgroundImageUrl: AWSURL
+  bio: String
+  location: String
+  website: AWSURL
+  birthdate: AWSDate
+  createdAt: AWSDateTime! # AWS timestamp
+  tweets: [TweetsPage!] # tweets under user profile
+  followersCount: Int! # how many people are following me
+  followingCount: Int! # how many people i'm following
+  tweetsCount: Int! # how many tweets i have created
+  likesCount: Int! # how many tweets i have liked
+}
+
+type OtherProfile implements IProfile {
+  id: ID!
+  name: String!
+  screenName: String!
+  imageUrl: AWSURL
+  backgroundImageUrl: AWSURL
+  bio: String
+  location: String
+  website: AWSURL
+  birthdate: AWSURL
+  createdAt: AWSDateTime!
+  tweets: [TweetsPage!]
+  followersCount: Int!
+  followingCount: Int!
+  tweetsCount: Int!
+  likesCount: Int!
+  following: Boolean! # am i following them
+  followedBy: Boolean! # am i followed by them
+}
+
+type TweetsPage {
+  tweets: [ITweet!]
+  nextToken: String
+}
+
+interface ITweet {
+  id: ID!
+  profile: IProfile! # user how retweeted other tweet
+  createdAt: AWSDateTime!
+}
+
+type Tweet implements ITweet {
+  id: ID!
+  profile: IProfile! # profile that created this tweet
+  createdAt: AWSDateTime!
+  text: String!
+  replies: Int!
+  likes: Int!
+  retweets: Int!
+  liked: Boolean! # wheather i ( mean's logged in user ) liked this tweet
+  retweeted: Boolean! # wheather i ( mean's logged in user ) retweeted this tweet
+}
+
+type Reply implements ITweet {
+  id: ID!
+  profile: IProfile!
+  createdAt: AWSDateTime!
+  text: String!
+  replies: Int!
+  inReplyToTweet: ITweet! # which tweet this reply belongs # user can reply to tweet as well as a reply
+  inReplyToUser: [IProfile!] # we replied to which user # in twitter we reply to original tweet creator and all the users that retweeted that tweet
+  likes: Int!
+  retweets: Int!
+  liked: Boolean!
+  retweeted: Boolean!
+}
+
+type Retweet implements ITweet {
+  id: ID!
+  profile: IProfile! # user how retweeted other tweet
+  createdAt: AWSDateTime!
+  retweetOf: ITweet # original tweet
+}
+
+type ProfilesPage {
+  profiles: [IProfile!]
+  nextToken: String
+}
+
+type Query {
+  getImageUploadUrl(extension: String, contentType: String): AWSURL!
+  getMyTimeline(limit: Int!, nextToken: String): TweetPage!
+  getMyProfile: MyProfile!
+  getProfile(screenName: String!): OtherProfile!
+  getTweets(userId: ID!, limit: Int!, nextToken: String): TweetsPage!
+  getLikes(userId: ID!, limit: INt!, nextToken: String): TweetsPage!
+  getFollowers(userId: ID!, limit: Int!, nextToken: String): ProfilesPage!
+  getFollowing(userId: ID!, limit: Int!, nextToken: String): ProfilesPage!
+}
+
+schema {
+  query: Query
+  mutation: Mutation
+}
+
+type Mutation {
+  editMyProfile(newProfile: ProfileInput): MyProfile!
+  tweet(text: String!): Tweet!
+  like(tweetId: ID!): Boolean! # here we don't need to return anything but graphql don't have void type so Boolean it is
+  unlike(tweetId: ID!): Boolean! # here we don't need to return anything but graphql don't have void type so Boolean it is
+  retweet(tweetId: ID!): Boolean! # here we don't need to return anything but graphql don't have void type so Boolean it is
+  unretweet(tweetId: ID!): Boolean! # here we don't need to return anything but graphql don't have void type so Boolean it is
+  reply(tweetId: ID!, text: String!): Reply!
+  follow(userId: ID!): Boolean!
+  unfollow(userId: ID!): Boolean!
+}
+
+input ProfileInput {
+  name: String!
+  imageUrl: AWSURL
+  backgroundImageUrl: AWSURL
+  bio: String
+  location: String
+  website: AWSURL
+  birthdate: AWSURL
+}

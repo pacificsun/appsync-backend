@@ -1,0 +1,19 @@
+service: appsync-backend
+
+frameworkVersion: "2"
+
+plugins:
+  - serverless-appsync-plugin
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+
+package:
+  exclude:
+    - package-lock.json
+    - package.json
+
+custom:
+  appSync:
+    - ${file(serverless.appsync-api.yml)}
