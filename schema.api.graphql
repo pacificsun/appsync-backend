@@ -7,9 +7,9 @@ interface IProfile {
   bio: String
   location: String
   website: AWSURL
-  birthdate: AWSURL
+  birthdate: AWSDate
   createdAt: AWSDateTime!
-  tweets: [TweetsPage!]
+  tweets: TweetsPage!
   followersCount: Int!
   followingCount: Int!
   tweetsCount: Int!
@@ -27,7 +27,7 @@ type MyProfile implements IProfile {
   website: AWSURL
   birthdate: AWSDate
   createdAt: AWSDateTime! # AWS timestamp
-  tweets: [TweetsPage!] # tweets under user profile
+  tweets: TweetsPage! # tweets under user profile
   followersCount: Int! # how many people are following me
   followingCount: Int! # how many people i'm following
   tweetsCount: Int! # how many tweets i have created
@@ -43,9 +43,9 @@ type OtherProfile implements IProfile {
   bio: String
   location: String
   website: AWSURL
-  birthdate: AWSURL
+  birthdate: AWSDate
   createdAt: AWSDateTime!
-  tweets: [TweetsPage!]
+  tweets: TweetsPage!
   followersCount: Int!
   followingCount: Int!
   tweetsCount: Int!
@@ -109,7 +109,7 @@ type Query {
   getMyProfile: MyProfile!
   getProfile(screenName: String!): OtherProfile!
   getTweets(userId: ID!, limit: Int!, nextToken: String): TweetsPage!
-  getLikes(userId: ID!, limit: INt!, nextToken: String): TweetsPage!
+  getLikes(userId: ID!, limit: Int!, nextToken: String): TweetsPage!
   getFollowers(userId: ID!, limit: Int!, nextToken: String): ProfilesPage!
   getFollowing(userId: ID!, limit: Int!, nextToken: String): ProfilesPage!
 }
